@@ -1,0 +1,11 @@
+version: '3.8'
+name: 'build'
+services: 
+  create-certs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /export
+    command: ["/bin/sh", "/scripts/create-certs.sh"]
+    #stdin_open: true
+    #tty: true
