@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{81A2AC59-F294-41AD-B167-C15B9641EC1C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{5206F7C9-216A-43E5-83F9-21D612E5F9E3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{D40247BA-02D2-4A2D-8930-CD4935670D28}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dockerCompose", "docker\dockerCompose\dockerCompose.dcproj", "{BA6B0FB3-8F1A-4C35-A1BB-399CBA25AB31}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BA6B0FB3-8F1A-4C35-A1BB-399CBA25AB31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA6B0FB3-8F1A-4C35-A1BB-399CBA25AB31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA6B0FB3-8F1A-4C35-A1BB-399CBA25AB31}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA6B0FB3-8F1A-4C35-A1BB-399CBA25AB31}.Release|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BA6B0FB3-8F1A-4C35-A1BB-399CBA25AB31} = {D40247BA-02D2-4A2D-8930-CD4935670D28}
+	EndGlobalSection
+EndGlobal
