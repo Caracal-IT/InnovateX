@@ -6,6 +6,6 @@ services:
       context: .
       dockerfile: Dockerfile
     working_dir: /export
-    command: ["/bin/sh", "/scripts/create-certs.sh"]
-    #stdin_open: true
-    #tty: true
+    entrypoint: 
+      - /bin/sh
+    command: /scripts/create-certs.sh
