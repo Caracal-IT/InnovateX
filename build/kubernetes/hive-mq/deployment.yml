@@ -1,0 +1,55 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hivemq-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hivemq
+  template:
+    metadata:
+      labels:
+        app: hivemq
+    spec:
+      containers:
+        - name: hivemq-container
+          image: hivemq/hivemq-ce:2023.10
+          ports:
+            - containerPort: 1883
+            #- containerPort: 8883 # MQTT with TLS
+          resources:
+            requests:
+              cpu: 1000m
+              memory: 2Gi
+            limits:
+              cpu: 1000m
+              memory: 6Gi
+          #volumeMounts:
+          #  - name: hivemq-config
+          #    mountPath: /opt/hivemq/conf
+          #  - name: hivemq-certsfile
+          #    mountPath: /opt/hivemq/certificates
+          #  - name: hivemq-licencefile
+          #    mountPath: /opt/hivemq/license
+          #  - name: hivemq-azurefile
+          #    mountPath: /opt/hivemq/data/persistence
+          #  #- name: hivemq-clientqueuefile
+          #  #  mountPath: /opt/hivemq/data/persistence/client_queue
+          #  #  subPath: override
+      #volumes:
+        #- name: hivemq-config
+        #  configMap:
+        #    name: hivemq-config
+        #- name: hivemq-certsfile
+        #  persistentVolumeClaim:
+        #    claimName: hivemq-certsfile
+        #- name: hivemq-licencefile
+        #  persistentVolumeClaim:
+        #    claimName: hivemq-licencefile
+        #- name: hivemq-azurefile
+        #  persistentVolumeClaim:
+        #    claimName: hivemq-azurefile
+        ##- name: hivemq-clientqueuefile
+        ##  persistentVolumeClaim:
+        ##    claimName: hivemq-clientqueuefile

@@ -1,0 +1,18 @@
+﻿apiVersion: v1
+kind: Service
+metadata:
+  name: hivemq-service
+spec:
+  selector:
+    app: hivemq
+  ports:
+    - protocol: TCP
+      name: mqtt
+      port: 1883 # MQTT
+    #- protocol: TCP
+    #  name: mqtt-tls
+    #  port: 8883 # MQTT with TLS
+    #- protocol: TCP
+    #  name: http-tls
+    #  port: 8080 # MQTT with TLS
+  type: LoadBalancer
