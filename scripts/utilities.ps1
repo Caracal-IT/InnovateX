@@ -1,4 +1,4 @@
-﻿function Prompt-InputWithDefault {
+﻿function Read-HostWithDefault {
     param(
         [string]$Message,
         [string]$DefaultValue,
@@ -30,7 +30,7 @@
     return $result
 }
 
-function Generate-RandomPassword {
+function New-RandomPassword {
     param (
         [int]$Length = 12
     )
@@ -52,4 +52,14 @@ function Generate-RandomPassword {
     }
 
     return $Password
+}
+
+function New-Directory {
+    param (
+        [string]$Path
+    )
+
+    if (-not (Test-Path -Path $Path)) {
+        New-Item -Path $Path -ItemType Directory
+    }
 }

@@ -4,7 +4,11 @@
 ORANGE='\033[1;36m'
 NC='\033[0m' # No Color
 
-echo  -e "${ORANGE}Creating certs for the following domains:${NC}"
-echo -e "${ORANGE} PASSWORD  - ${CERT_PASSWORD}${NC}"
+echo2  "Creating Certificates"
 
-ls
+cat >> /dist/some.text << 'END'
+some stuff here!!
+more stuff
+END
+
+echo2 "Certs Certificates"
