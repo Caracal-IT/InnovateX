@@ -1,4 +1,8 @@
-﻿. ../../scripts/utilities.ps1
+﻿param(
+    [string]$Name
+)
+
+. ../../scripts/utilities.ps1
 
 Write-Host "Creating Certificates" -ForegroundColor DarkMagenta
 Write-Host "Certificte Settings" -ForegroundColor DarkMagenta
@@ -8,18 +12,22 @@ $certPassword = Read-HostWithDefault -Message "Certificate Password" -DefaultVal
 
 $CertPwd = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($certPassword))
 
+$currentDir = Get-Location
+
 docker compose `
     -f ../../docker/certs/docker-compose.yml run --rm `
-    -v "$(pwd)/dist:/export" `
-    -v "$(pwd)/scripts:/scripts" `
-    -v "$(pwd)/dist:/dist" `
-    -e "CERT_PASSWORD=$CertPwd"`
-    create-certs
+    -v "$currentDir/dist:/export" `
+    -v "$currentDir/scripts:/scripts" `
+    -v "$currentDir/dist:/dist" `
+    -e "CERT_PASSWORD=$CertPwd" `
+    -e "CERT_NAME=$Name" `
+    create-certs /scripts/start.sh
 
-New-Directory -Path "../dist/certs"
-Remove-Item -Path "../dist/certs" -Recurse -Force
+New-Directory -Path "../dist/certs/$Name"
+Remove-Item -Path "../dist/certs/$Name" -Recurse -Force
 
-Copy-Item -Path "./dist" -Destination "../dist/certs" -Recurse
+$certPassword | ConvertFrom-SecureString | out-file "./dist/credentials.bin"
+Copy-Item -Path "./dist/" -Destination "../dist/certs/$Name/" -Recurse
 Remove-Item -Path "./dist" -Recurse -Force
 
 Write-Host "Certificates Created" -ForegroundColor DarkMagenta

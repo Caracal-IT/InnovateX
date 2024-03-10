@@ -8,4 +8,3 @@ services:
     working_dir: /export
     entrypoint: 
       - /bin/sh
-    command: /scripts/create-certs.sh
