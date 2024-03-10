@@ -33,7 +33,7 @@ MQTT_BROKER=$mqttBroker
 $cnf | Out-File -FilePath "./build/config/settings.cnf" -Encoding utf8 -Force
 
 if($mqttBroker -eq "solace") {
-    . ./scripts/init-solace.ps1
+    . ./scripts/solace/init.ps1
 } elseif($mqttBroker -eq "hive-mq") {
     . ./scripts/init-hive-mq.ps1
 } else {
