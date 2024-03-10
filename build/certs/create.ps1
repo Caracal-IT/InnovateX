@@ -10,7 +10,7 @@ $CertPwd = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Run
 
 docker compose `
     -f ../../docker/certs/docker-compose.yml run --rm `
-    -v "$(pwd):/export" `
+    -v "$(pwd)/dist:/export" `
     -v "$(pwd)/scripts:/scripts" `
     -v "$(pwd)/dist:/dist" `
     -e "CERT_PASSWORD=$CertPwd"`
