@@ -97,7 +97,7 @@ public class MqttClient
             {
                 var response = new MqttApplicationMessageBuilder()
                     .WithTopic(arg.ApplicationMessage.ResponseTopic)
-                    .WithPayload("Hello")
+                    .WithPayload($"Hello {Random.Shared.Next(10, 99)}")
                     .WithCorrelationData(arg.ApplicationMessage.CorrelationData)
                     .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
                     .WithRetainFlag()
