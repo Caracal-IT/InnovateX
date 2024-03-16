@@ -13,7 +13,7 @@ Console.WriteLine("Hello, World!");
 var mqttClient = new MqttClient();
 await mqttClient.ConnectAsync();
 
-var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(10));
 
 var result = "";
 
@@ -114,6 +114,8 @@ public class MqttClient
                     .WithRetainFlag()
                     .WithMessageExpiryInterval(60)
                     .Build();
+                
+                await Task.Delay(1000);
                 
                 await _mqttClient.EnqueueAsync(response);
                 return;
