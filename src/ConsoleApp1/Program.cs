@@ -115,8 +115,6 @@ public class MqttClient
                     .WithMessageExpiryInterval(60)
                     .Build();
                 
-                await Task.Delay(1000);
-                
                 await _mqttClient.EnqueueAsync(response);
                 return;
             }
