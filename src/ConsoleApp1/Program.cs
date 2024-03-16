@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using System.Text;
+using System.Text.Unicode;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Extensions.ManagedClient;
@@ -18,7 +19,7 @@ var result = "";
 
 try
 {
-    var action = new MqttAction("elm/test", "Ettiene", "elm/response");
+    var action = new MqttAction("elm/test", $"Ettiene {Random.Shared.Next(10, 99)}", "elm/response");
     result = await MqttActionWrapper.ExecuteAsync(action, mqttClient, cancellationTokenSource.Token);
 }
 catch (Exception e)
@@ -33,7 +34,7 @@ finally
 Console.WriteLine(result);
 Console.WriteLine("Done");
 
-public record struct MqttCommand(string Topic, string Payload, Guid? CorrelationId = default);
+public record struct MqttCommand(string Topic, string? Payload, Guid? CorrelationId = default);
 
 public record struct MqttAction(string Topic, string Payload, string ResponseTopic);
 
@@ -56,10 +57,15 @@ public class MqttActionWrapper
 
     public static async Task<string> ExecuteAsync(MqttAction action, MqttClient client, CancellationToken token)
     {
-        var wrapper = new MqttActionWrapper(action, client);
-        await client.SubscribeAsync(action.ResponseTopic);
-        await client.EnqueueAsync(new MqttCommand(action.Topic, action.Payload, wrapper.CorrelationId), action.ResponseTopic);
-        return await wrapper.WaitAsync(token);
+        var a = action with { ResponseTopic = $"{action.ResponseTopic}@{Guid.NewGuid()}" };
+        var wrapper = new MqttActionWrapper(a, client);
+        await client.SubscribeAsync(a.ResponseTopic);
+        await client.EnqueueAsync(new MqttCommand(action.Topic, action.Payload, wrapper.CorrelationId), a.ResponseTopic);
+        var rsp = await wrapper.WaitAsync(token);
+        await client.UnsubscribeAsync(a.ResponseTopic);
+        await client.EnqueueAsync(new MqttCommand(a.ResponseTopic, null));
+        
+        return rsp;
     }
     
     private Task<string> WaitAsync(CancellationToken token)
@@ -95,12 +101,18 @@ public class MqttClient
     {
             if (arg.ApplicationMessage.ResponseTopic != null)
             {
+                var b = string.Empty;
+                
+                if (arg.ApplicationMessage.PayloadSegment.Array != null)
+                    b = Encoding.UTF8.GetString(arg.ApplicationMessage.PayloadSegment.Array);
+
                 var response = new MqttApplicationMessageBuilder()
                     .WithTopic(arg.ApplicationMessage.ResponseTopic)
-                    .WithPayload($"Hello {Random.Shared.Next(10, 99)}")
+                    .WithPayload($"Hello {Random.Shared.Next(10, 99)} {b}")
                     .WithCorrelationData(arg.ApplicationMessage.CorrelationData)
                     .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
                     .WithRetainFlag()
+                    .WithMessageExpiryInterval(60)
                     .Build();
                 
                 await _mqttClient.EnqueueAsync(response);
@@ -129,6 +141,7 @@ public class MqttClient
     public async Task DisconnectAsync() => await _mqttClient.StopAsync().ConfigureAwait(false);
 
     public Task SubscribeAsync(string topic) => _mqttClient.SubscribeAsync(topic);
+    public Task UnsubscribeAsync(string topic) => _mqttClient.UnsubscribeAsync(topic);
 
     public async Task EnqueueAsync(MqttCommand command, string? responseTopic = default)
     {
@@ -136,15 +149,16 @@ public class MqttClient
             .WithTopic(command.Topic)
             .WithPayload(command.Payload)
             .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
+            .WithMessageExpiryInterval(60)
             .WithRetainFlag();
-            
-            if(responseTopic is not null)
-                message = message.WithResponseTopic(responseTopic);
-                    
-            var message2 = message.WithCorrelationData((command.CorrelationId??Guid.NewGuid()).ToByteArray())
+
+        if (responseTopic is not null)
+            message = message.WithResponseTopic(responseTopic);
+
+        var message2 = message.WithCorrelationData((command.CorrelationId ?? Guid.NewGuid()).ToByteArray())
             .Build();
 
-            await SubscribeAsync(command.Topic).ConfigureAwait(false);
+        await SubscribeAsync(command.Topic).ConfigureAwait(false);
 
         await _mqttClient.EnqueueAsync(message2).ConfigureAwait(false);
     }
