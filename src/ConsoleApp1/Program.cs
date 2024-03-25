@@ -10,6 +10,24 @@ using MQTTnet.Protocol;
 
 Console.WriteLine("Hello, World!");
 
+var p = new Person { Name = "Ettiene", Age = 40 };
+p.Parent = p;
+
+var json = System.Text.Json.JsonSerializer.Serialize(p);
+
+Console.WriteLine(json);
+
+return;
+
+class Person
+{
+    public required string Name { get; set; }
+    public int Age { get; set; }
+    
+    public Person? Parent { get; set; }
+}
+
+/*
 var mqttClient = new MqttClient();
 await mqttClient.ConnectAsync();
 
@@ -163,3 +181,4 @@ public class MqttClient
         await _mqttClient.EnqueueAsync(message2).ConfigureAwait(false);
     }
 }
+*/

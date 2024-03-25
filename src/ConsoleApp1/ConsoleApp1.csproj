@@ -8,10 +8,6 @@
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
-    <PropertyGroup>
-        <PublishAot>true</PublishAot>
-    </PropertyGroup>
-
     <ItemGroup>
       <Content Include="..\..\.dockerignore">
         <Link>.dockerignore</Link>
@@ -20,6 +16,8 @@
 
     <ItemGroup>
       <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="4.3.3.952" />
+      <PackageReference Include="NLog" Version="5.2.8" />
+      <PackageReference Include="NLog.Targets.ElasticSearch" Version="7.7.0" />
     </ItemGroup>
 
 </Project>
