@@ -12,14 +12,12 @@ await mqttClient.ConnectAsync();
 
 var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(10));
 
-var result = "";
-
 try
 {
     for (int i = 0; i < 20; i++)
     {
         var action = new MqttAction("elm/test", $"Ettiene {Random.Shared.Next(10, 99)}", "elm/response");
-        result = await MqttActionWrapper.ExecuteAsync(action, mqttClient, cancellationTokenSource.Token);
+        var result = await MqttActionWrapper.ExecuteAsync(action, mqttClient, cancellationTokenSource.Token);
         Console.WriteLine(result);
     }
 }
