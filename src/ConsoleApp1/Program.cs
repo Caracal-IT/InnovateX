@@ -14,7 +14,7 @@ var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1
 
 try
 {
-    for (int i = 0; i < 20; i++)
+    for (var i = 0; i < 20; i++)
     {
         var action = new MqttAction("elm/test", $"Ettiene {Random.Shared.Next(10, 99)}", "elm/response");
         var result = await MqttActionWrapper.ExecuteAsync(action, mqttClient, cancellationTokenSource.Token);
@@ -114,9 +114,11 @@ public class MqttClient
                 if (arg.ApplicationMessage.PayloadSegment.Array != null)
                     payload = Encoding.UTF8.GetString(arg.ApplicationMessage.PayloadSegment.Array);
                 
+                await Task.Delay(Random.Shared.Next(0, Settings.MaxFakeDelay));
+                
                 var msg = Random.Shared.Next(0, 99) % 5 == 0 ? GetErrorMessage(payload)  : GetResponseMessage(payload);
-
                 await _mqttClient.EnqueueAsync(msg);
+                
                 return;
             }
 
@@ -189,6 +191,7 @@ public class MqttClient
 
 public static class Settings
 {
+    public static int MaxFakeDelay => 50;
     public static string MqttServer => "dev.caracal.com";
     public static int MqttPort => 1883;
     public static uint Timeout => 60;
