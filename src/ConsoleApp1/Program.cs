@@ -49,7 +49,7 @@ finally
 }
 Console.WriteLine("Done");
 
-public record struct MqttCommand(string Topic, string? Payload, Guid? CorrelationId = default);
+public record struct MqttCommand(string Topic, string? Payload, Guid CorrelationId);
 
 public record struct MqttAction(string Topic, string Payload, string ResponseTopic);
 
@@ -66,16 +66,16 @@ public class MqttActionWrapper
 
     public static async Task<string> ExecuteAsync(MqttAction action, MqttClient client, CancellationToken token)
     {
-        var a = action with { ResponseTopic = $"{action.ResponseTopic}@{Guid.NewGuid()}" };
         var wrapper = new MqttActionWrapper(client);
+        var a = action with { ResponseTopic = $"{action.ResponseTopic}@{wrapper._correlationId}" };
         await client.SubscribeAsync(a.ResponseTopic);
         await client.SubscribeAsync($"{Settings.ErrorTopic}/{wrapper._correlationId}");
         await client.EnqueueAsync(new MqttCommand(action.Topic, action.Payload, wrapper._correlationId), a.ResponseTopic);
         var rsp = await wrapper.WaitAsync(token);
         await client.UnsubscribeAsync(a.ResponseTopic);
         await client.UnsubscribeAsync($"{Settings.ErrorTopic}/{wrapper._correlationId}");
-        await client.EnqueueAsync(new MqttCommand(a.ResponseTopic, null));
-        
+        await client.EnqueueAsync(new MqttCommand(a.ResponseTopic, null, wrapper._correlationId));
+        await client.EnqueueAsync(new MqttCommand($"{Settings.ErrorTopic}/{wrapper._correlationId}", null, wrapper._correlationId));
         return rsp;
     }
     
@@ -165,7 +165,13 @@ public class MqttClient
          await _mqttClient.StartAsync(options).ConfigureAwait(false);
     }
     
-    public async Task DisconnectAsync() => await _mqttClient.StopAsync().ConfigureAwait(false);
+    public async Task DisconnectAsync()
+    {
+        while(_mqttClient.PendingApplicationMessagesCount > 0)
+            await Task.Delay(100);
+        
+        await _mqttClient.StopAsync().ConfigureAwait(false);
+    }
 
     public Task SubscribeAsync(string topic) => _mqttClient.SubscribeAsync(topic);
     public Task UnsubscribeAsync(string topic) => _mqttClient.UnsubscribeAsync(topic);
@@ -182,7 +188,7 @@ public class MqttClient
         if (responseTopic is not null)
             message = message.WithResponseTopic(responseTopic);
 
-        var message2 = message.WithCorrelationData((command.CorrelationId ?? Guid.NewGuid()).ToByteArray()).Build();
+        var message2 = message.WithCorrelationData(command.CorrelationId.ToByteArray()).Build();
 
         await SubscribeAsync(command.Topic).ConfigureAwait(false);
         await _mqttClient.EnqueueAsync(message2).ConfigureAwait(false);
