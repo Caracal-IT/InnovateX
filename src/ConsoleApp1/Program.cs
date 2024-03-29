@@ -18,8 +18,26 @@ try
     {
         var action = new MqttAction("elm/test", $"Ettiene {Random.Shared.Next(10, 99)}", "elm/response");
         var result = await MqttActionWrapper.ExecuteAsync(action, mqttClient, cancellationTokenSource.Token);
-        Console.WriteLine(result);
+        Console.WriteLine($"{i}: {action.Payload} - {result}");
     }
+    
+    Console.WriteLine("=======================================");
+    
+    var tasks = new List<Func<Task>>();
+    
+    for (var i = 0; i < 20; i++)
+    {
+        var i1 = i;
+        tasks.Add(async () =>
+        {
+            await Task.Delay(Random.Shared.Next(0, 100));
+            var action = new MqttAction("elm/test", $"Ettiene {Random.Shared.Next(10, 99)}", "elm/response");
+            var result = await MqttActionWrapper.ExecuteAsync(action, mqttClient, cancellationTokenSource.Token);
+            Console.WriteLine($"{i1}: {action.Payload} - {result}");
+        });
+    }
+    
+    await Task.WhenAll(tasks.Select(t => t()));
 }
 catch (Exception e)
 {
