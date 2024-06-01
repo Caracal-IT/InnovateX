@@ -1,3 +1,7 @@
+:root {
+  --react-blue: #61dafb;
+}
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -39,4 +43,22 @@
 
 .read-the-docs {
   color: #888;
+}
+
+table {
+  border: none;
+  border-collapse: collapse;
+}
+
+tr:nth-child(even) {
+  background-color: #22252c;
+}
+
+th {
+  border-bottom: solid 0.2rem var(--react-blue);
+}
+
+th,
+td {
+  padding: 1rem;
 }

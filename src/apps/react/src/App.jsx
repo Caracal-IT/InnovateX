@@ -1,11 +1,26 @@
-import { useState } from 'react'
+import { useEffect, useState } from "react";
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+    const [count, setCount] = useState(0)
+    const [forecasts, setForecasts] = useState([])
 
+    const requestWeather = async () => {
+        const weather = await fetch("api/weatherforecast");
+        console.log(weather);
+
+        const weatherJson = await weather.json();
+        console.log(weatherJson);
+
+        setForecasts(weatherJson);
+    };
+
+    useEffect(() => {
+        requestWeather();
+    }, [])
+    
   return (
     <>
       <div>
@@ -17,17 +32,49 @@ function App() {
         </a>
       </div>
       <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
+        <div className="card">
+            <button onClick={() => setCount((count) => count + 1)}>
+                count is {count}
+            </button>
+            <p>
+                Edit <code>src/App.jsx</code> and save to test HMR
+            </p>
+            <hr/>
+            <table>
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Temp. (C)</th>
+                    <th>Temp. (F)</th>
+                    <th>Summary</th>
+                </tr>
+                </thead>
+                <tbody>
+                {(
+                    forecasts ?? [
+                        {
+                            date: "N/A",
+                            temperatureC: "",
+                            temperatureF: "",
+                            summary: "No forecasts",
+                        },
+                    ]
+                ).map((w) => {
+                    return (
+                        <tr key={w.date}>
+                            <td>{w.date}</td>
+                            <td>{w.temperatureC}</td>
+                            <td>{w.temperatureF}</td>
+                            <td>{w.summary}</td>
+                        </tr>
+                    );
+                })}
+                </tbody>
+            </table>
+        </div>
+        <p className="read-the-docs">
+            Click on the Vite and React logos to learn more
         </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
 }
