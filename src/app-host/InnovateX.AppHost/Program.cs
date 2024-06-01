@@ -2,7 +2,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var cache = builder.AddRedis("cache");
 
-var apiService = builder.AddProject<Projects.InnovateX_ApiService>("apiservice").WithExternalHttpEndpoints();
+var apiService = builder.AddProject<Projects.InnovateX_ApiService>("weatherapi").WithExternalHttpEndpoints();
 
 builder.AddProject<Projects.InnovateX_Web_Blazor>("webfrontend")
     .WithExternalHttpEndpoints()
