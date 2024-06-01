@@ -1,0 +1,21 @@
+{
+  "name": "innovatex",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "build": "run-p \"build-only {@}\" --",
+    "build-only": "vite build",
+    "dev": "vite",
+    "build2": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "vue": "^3.4.21"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "vite": "^5.2.0"
+  }
+}
