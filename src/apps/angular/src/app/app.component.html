@@ -227,6 +227,25 @@
       </svg>
       <h1>Hello, {{ title }}</h1>
       <p>Congratulations! Your app is running. 🎉</p>
+      <hr/>
+      <table>
+        <thead>
+        <tr>
+          <th>Date</th>
+          <th>Temp. (C)</th>
+          <th>Temp. (F)</th>
+          <th>Summary</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let forecast of forecasts; index as i;">
+          <td>{{forecast.date}}</td>
+          <td>{{forecast.temperatureC}}</td>
+          <td>{{forecast.temperatureF}}</td>
+          <td>{{forecast.summary}}</td>
+        </tr>
+        </tbody>
+      </table>
     </div>
     <div class="divider" role="separator" aria-label="Divider"></div>
     <div class="right-side">
