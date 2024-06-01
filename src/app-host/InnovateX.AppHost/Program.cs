@@ -15,4 +15,10 @@ builder.AddNpmApp("vue", "../../apps/vue")
     .WithExternalHttpEndpoints()
     .PublishAsDockerFile();
 
+builder.AddNpmApp("angular", "../../apps/angular")
+    .WithReference(apiService)
+    .WithHttpEndpoint(env: "PORT")
+    .WithExternalHttpEndpoints()
+    .PublishAsDockerFile();
+
 builder.Build().Run();
